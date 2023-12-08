@@ -1,21 +1,21 @@
 package internal
 
 type Price struct {
-	Day int `json:"day"`
+	Day int64 `json:"day"`
 }
 
 type VehicleInfo struct {
-	VehicleID       int    `json:"id"`
-	Name            string `json:"name"`
-	Description     string `json:"description"`
-	Type            string `json:"type"`
-	Make            string `json:"make"`
-	Model           string `json:"model"`
-	Year            string `json:"year"`
-	Length          string `json:"length"`
-	Sleeps          string `json:"sleeps"`
-	PrimaryImageUrl string `json:"primary_image_url"`
-	Price           Price  `json:"price"`
+	VehicleID       uint    `json:"id"`
+	Name            string  `json:"name"`
+	Description     string  `json:"description"`
+	Type            string  `json:"type"`
+	Make            string  `json:"make"`
+	Model           string  `json:"model"`
+	Year            int     `json:"year"`
+	Length          float64 `json:"length"`
+	Sleeps          int     `json:"sleeps"`
+	PrimaryImageUrl string  `json:"primary_image_url"`
+	Price           Price   `json:"price"`
 }
 
 type Location struct {

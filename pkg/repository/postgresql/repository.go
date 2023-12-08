@@ -12,7 +12,7 @@ type repository struct {
 	db gorm.DB
 }
 
-func NewRepository() *repository {
+func newRepository() *repository {
 	repository := repository{}
 	dsn := "host=localhost user=root password=root dbname=testingwithrentals port=5434 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
