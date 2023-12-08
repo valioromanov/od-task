@@ -1,25 +1,26 @@
 package postgresql
 
 import (
-	"fmt"
+	"od-task/pkg/app"
 
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-type Repository struct {
+type repository struct {
 	db gorm.DB
 }
 
-func NewRepository() (*Repository, error) {
-	repository := Repository{}
+func NewRepository() *repository {
+	repository := repository{}
 	dsn := "host=localhost user=root password=root dbname=testingwithrentals port=5434 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		fmt.Println(err)
-		return &repository, err
+		logrus.Error("Error while connection to the database")
+		app.Crash(err)
 	}
-
+	logrus.Info("Successfull connection to the database")
 	repository.db = *db
-	return &repository, nil
+	return &repository
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"od-task/pkg/app"
-	"od-task/pkg/repository/postgresql"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -18,10 +17,7 @@ func handleError(err error, m string) {
 
 func main() {
 
-	pgRepo, _ := postgresql.NewRepository()
-
-	fmt.Println(pgRepo)
-
+	// rentalRepo := postgresql.NewRentalRepository()
 	handler := gin.New()
 
 	logrus.Info("starting http server...")
