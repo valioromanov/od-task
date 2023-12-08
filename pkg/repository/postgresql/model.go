@@ -20,8 +20,8 @@ type Rentals struct {
 	VehicleLength   float64   `gorm:"vehicle_length"`
 	Created         time.Time `gorm:"created"`
 	Updated         time.Time `gorm:"updated"`
-	Lat             float32   `gorm:"lat"`
-	Lng             float32   `gorm:"lng"`
+	Latitude        float32   `gorm:"lat"`
+	Longtitude      float32   `gorm:"lng"`
 	PrimaryImageUrl string    `gorm:"primary_image_url"`
 }
 
