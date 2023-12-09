@@ -21,17 +21,14 @@ func handleError(err error, m string) {
 func main() {
 
 	config, err := env.LoadAppConfig()
-
 	handleError(err, "dailed to load app config")
-
-	fmt.Println("config: ", config)
 
 	rentalRepo := postgresql.NewRentalRepository(config)
 	presenter := internal.NewPresenter(internal.NewController(rentalRepo))
 	handler := gin.New()
 
-	handler.GET("/rental/:rentalID", presenter.GetVehicleByID)
-	handler.GET("/rental", presenter.GetFilteredVehicles)
+	handler.GET("/rental/:rentalID", presenter.GetSingleRentalByID)
+	handler.GET("/rental", presenter.GetRentalsByFilters)
 	logrus.Info("starting http server...")
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf("%s:%s", config.Host, config.Port),

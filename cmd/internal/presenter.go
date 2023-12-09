@@ -8,7 +8,7 @@ import (
 )
 
 type RentalController interface {
-	GetVehicleByID(id string) (GetRentalResponse, error)
+	GetRentalByID(id string) (GetRentalResponse, error)
 	GetFilteredRentals(filters map[string][]string) ([]GetRentalResponse, error)
 }
 
@@ -22,16 +22,14 @@ func NewPresenter(controller *Controller) *Presenter {
 	}
 }
 
-func (p *Presenter) GetVehicleByID(ctx *gin.Context) {
-
+func (p *Presenter) GetSingleRentalByID(ctx *gin.Context) {
 	vehicleID := ctx.Param("rentalID")
-
 	if vehicleID == "" {
 		ctx.JSON(http.StatusBadRequest, NewAPIError("missing rentalID parametes", http.StatusBadRequest))
 		return
 	}
 
-	rental, err := p.controller.GetVehicleByID(vehicleID)
+	rental, err := p.controller.GetRentalByID(vehicleID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, NewAPIError(fmt.Errorf("cannot fetch a single rental by id").Error(), http.StatusBadRequest))
 		return
@@ -40,7 +38,7 @@ func (p *Presenter) GetVehicleByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, rental)
 }
 
-func (p *Presenter) GetFilteredVehicles(ctx *gin.Context) {
+func (p *Presenter) GetRentalsByFilters(ctx *gin.Context) {
 	queryParams := ctx.Request.URL.Query()
 	rentals, err := p.controller.GetFilteredRentals(queryParams)
 	if err != nil {

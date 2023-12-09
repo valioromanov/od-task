@@ -35,7 +35,6 @@ func (r *RentalRepository) FindById(id string) (FindResult, error) {
 	if tx.RowsAffected == 0 {
 		return FindResult{}, fmt.Errorf("no rows affected")
 	}
-	fmt.Println("id: ", result.ID)
 	return result, nil
 }
 

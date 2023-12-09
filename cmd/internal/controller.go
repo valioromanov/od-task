@@ -20,7 +20,7 @@ func NewController(repository RentalRepository) *Controller {
 	}
 }
 
-func (c *Controller) GetVehicleByID(id string) (GetRentalResponse, error) {
+func (c *Controller) GetRentalByID(id string) (GetRentalResponse, error) {
 	var vehicle = postgresql.FindResult{}
 	vehicle, err := c.repo.FindById(id)
 
