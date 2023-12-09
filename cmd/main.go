@@ -24,6 +24,7 @@ func main() {
 	handler := gin.New()
 
 	handler.GET("/rental/:rentalID", presenter.GetVehicleByID)
+	handler.GET("/rental", presenter.GetFilteredVehicles)
 	logrus.Info("starting http server...")
 	httpServer := &http.Server{
 		Addr:    "localhost:8080",

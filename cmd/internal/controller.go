@@ -1,11 +1,13 @@
 package internal
 
 import (
+	"fmt"
 	"od-task/pkg/repository/postgresql"
 )
 
 type RentalRepository interface {
 	FindById(id string) (postgresql.FindResult, error)
+	FindByFilters(filters map[string][]string) ([]postgresql.FindResult, error)
 }
 
 type Controller struct {
@@ -18,18 +20,33 @@ func NewController(repository RentalRepository) *Controller {
 	}
 }
 
-func (c *Controller) GetVehicleByID(id string) (VehicleInfo, Location, User, error) {
+func (c *Controller) GetVehicleByID(id string) (GetRentalResponse, error) {
 	var vehicle = postgresql.FindResult{}
 	vehicle, err := c.repo.FindById(id)
 
 	if err != nil {
-		return VehicleInfo{}, Location{}, User{}, err
+		return GetRentalResponse{}, err
 	}
-	vehicleInfo, location, user := findResultToControllerResponse(vehicle)
-	return vehicleInfo, location, user, nil
+	rental := findResultToControllerResponse(vehicle)
+	return rental, nil
 }
 
-func findResultToControllerResponse(vehicle postgresql.FindResult) (VehicleInfo, Location, User) {
+func (c *Controller) GetFilteredRentals(filters map[string][]string) ([]GetRentalResponse, error) {
+	filteredRentals, err := c.repo.FindByFilters(filters)
+	if err != nil {
+		return nil, fmt.Errorf("error while fetching filtered rentals: %s", err.Error())
+	}
+
+	rentals := make([]GetRentalResponse, len(filteredRentals))
+
+	for ind, val := range filteredRentals {
+		rentals[ind] = findResultToControllerResponse(val)
+	}
+
+	return rentals, nil
+}
+
+func findResultToControllerResponse(vehicle postgresql.FindResult) GetRentalResponse {
 	var vehicleInfo = VehicleInfo{
 		VehicleID:       vehicle.ID,
 		Name:            vehicle.Name,
@@ -51,8 +68,8 @@ func findResultToControllerResponse(vehicle postgresql.FindResult) (VehicleInfo,
 		State:      vehicle.HomeState,
 		Zip:        vehicle.HomeZip,
 		Country:    vehicle.HomeCountry,
-		Latitude:   vehicle.Lat,
-		Longtitude: vehicle.Lng,
+		Latitude:   vehicle.Latitude,
+		Longtitude: vehicle.Longtitude,
 	}
 
 	var user = User{
@@ -61,5 +78,9 @@ func findResultToControllerResponse(vehicle postgresql.FindResult) (VehicleInfo,
 		LastName:  vehicle.LastName,
 	}
 
-	return vehicleInfo, location, user
+	return GetRentalResponse{
+		vehicleInfo,
+		location,
+		user,
+	}
 }

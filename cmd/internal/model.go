@@ -5,7 +5,7 @@ type Price struct {
 }
 
 type VehicleInfo struct {
-	VehicleID       uint    `json:"id"`
+	VehicleID       int     `json:"id"`
 	Name            string  `json:"name"`
 	Description     string  `json:"description"`
 	Type            string  `json:"type"`
@@ -37,4 +37,14 @@ type GetRentalResponse struct {
 	VehicleInfo
 	Location Location `json:"location"`
 	User     User     `json:"user"`
+}
+
+type Filters struct {
+	MinPrice int64  `form:"price_min"`
+	MaxPrice int64  `form:"price_max"`
+	Limit    uint   `form:"limit"`
+	Offset   uint   `form:"offset,default=0"`
+	IDs      string `form:"ids"`
+	Near     string `form:"near"` //[lat,lng]
+	Sort     string `form:"sort"`
 }

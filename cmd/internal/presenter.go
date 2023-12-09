@@ -8,7 +8,8 @@ import (
 )
 
 type RentalController interface {
-	GetVehicleByID(id string) (VehicleInfo, Location, User, error)
+	GetVehicleByID(id string) (GetRentalResponse, error)
+	GetFilteredRentals(filters map[string][]string) ([]GetRentalResponse, error)
 }
 
 type Presenter struct {
@@ -26,22 +27,26 @@ func (p *Presenter) GetVehicleByID(ctx *gin.Context) {
 	vehicleID := ctx.Param("rentalID")
 
 	if vehicleID == "" {
-		ctx.JSON(http.StatusBadRequest, fmt.Errorf("missing rentalID parametes"))
+		ctx.JSON(http.StatusBadRequest, NewAPIError("missing rentalID parametes", http.StatusBadRequest))
+		return
 	}
 
-	vehicleInfo, location, user, err := p.controller.GetVehicleByID(vehicleID)
-
+	rental, err := p.controller.GetVehicleByID(vehicleID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, fmt.Errorf("cannot fetch a single rental by id: %w", err))
+		ctx.JSON(http.StatusInternalServerError, NewAPIError(fmt.Errorf("cannot fetch a single rental by id").Error(), http.StatusBadRequest))
+		return
 	}
 
-	ctx.JSON(http.StatusOK, toGetRentalResponse(vehicleInfo, location, user))
+	ctx.JSON(http.StatusOK, rental)
 }
 
-func toGetRentalResponse(vehicleInfo VehicleInfo, location Location, user User) GetRentalResponse {
-	return GetRentalResponse{
-		vehicleInfo,
-		location,
-		user,
+func (p *Presenter) GetFilteredVehicles(ctx *gin.Context) {
+	queryParams := ctx.Request.URL.Query()
+	rentals, err := p.controller.GetFilteredRentals(queryParams)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, NewAPIError(fmt.Errorf("cannot fetch a filtered rentals: %s", err.Error()).Error(), http.StatusInternalServerError))
+		return
 	}
+
+	ctx.JSON(http.StatusOK, rentals)
 }
