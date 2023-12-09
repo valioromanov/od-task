@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//go:generate mockgen --source=presenter.go --destination mocks/presenter.go --package mocks
 type RentalController interface {
 	GetRentalByID(id string) (GetRentalResponse, error)
 	GetFilteredRentals(filters map[string][]string) ([]GetRentalResponse, error)

@@ -5,6 +5,7 @@ import (
 	"od-task/pkg/repository/postgresql"
 )
 
+//go:generate mockgen --source=controller.go --destination mocks/controller.go --package mocks
 type RentalRepository interface {
 	FindById(id string) (postgresql.FindResult, error)
 	FindByFilters(filters map[string][]string) ([]postgresql.FindResult, error)
