@@ -2,6 +2,7 @@ package postgresql
 
 import (
 	"fmt"
+	"od-task/cmd/env"
 	"od-task/pkg/helper"
 	"strconv"
 
@@ -14,8 +15,8 @@ type RentalRepository struct {
 	*repository
 }
 
-func NewRentalRepository() *RentalRepository {
-	repo := newRepository()
+func NewRentalRepository(config env.AppConfig) *RentalRepository {
+	repo := newRepository(config)
 
 	return &RentalRepository{
 		repo,

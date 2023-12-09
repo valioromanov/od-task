@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"od-task/cmd/env"
 	"od-task/cmd/internal"
 	"od-task/pkg/app"
 	"od-task/pkg/repository/postgresql"
@@ -19,7 +20,13 @@ func handleError(err error, m string) {
 
 func main() {
 
-	rentalRepo := postgresql.NewRentalRepository()
+	config, err := env.LoadAppConfig()
+
+	handleError(err, "dailed to load app config")
+
+	fmt.Println("config: ", config)
+
+	rentalRepo := postgresql.NewRentalRepository(config)
 	presenter := internal.NewPresenter(internal.NewController(rentalRepo))
 	handler := gin.New()
 
@@ -27,7 +34,7 @@ func main() {
 	handler.GET("/rental", presenter.GetFilteredVehicles)
 	logrus.Info("starting http server...")
 	httpServer := &http.Server{
-		Addr:    "localhost:8080",
+		Addr:    fmt.Sprintf("%s:%s", config.Host, config.Port),
 		Handler: handler,
 	}
 
