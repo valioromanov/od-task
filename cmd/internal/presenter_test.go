@@ -10,6 +10,7 @@ import (
 	"od-task/pkg/helper/mockutil"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -108,6 +109,43 @@ var _ = Describe("Presenter", mockutil.Mockable(func(helper *mockutil.Helper) {
 				Expect(mockContext.Writer.Status()).To(Equal(http.StatusOK))
 				Expect(json.Unmarshal(recorder.Body.Bytes(), &rentalResp)).To(Succeed())
 				Expect(rentalResp).To(Equal(expectedControllerResult))
+			})
+		})
+	})
+
+	FDescribe("GetRentalsByFilters", func() {
+		var urlString = "http://abc.com/rental/"
+		When("Controller returns an error", func() {
+			BeforeEach(func() {
+				mockContext.Request, _ = http.NewRequest("GET", urlString, nil)
+				controller.EXPECT().GetFilteredRentals(gomock.Any()).Return(nil, fmt.Errorf(errorMessage))
+			})
+
+			It("should return StatusInternalServerError", func() {
+				mockContext.Request.URL.RawQuery = "limit=1&near=\"11.54,125.15\""
+				presenter.GetRentalsByFilters(mockContext)
+				var errResp internal.APIError
+				Expect(mockContext.Writer.Status()).To(Equal(http.StatusInternalServerError))
+				Expect(json.Unmarshal(recorder.Body.Bytes(), &errResp)).To(Succeed())
+				Expect(errResp.Code).To(Equal(http.StatusInternalServerError))
+				Expect(errResp.Messgage).To(ContainSubstring("cannot fetch a filtered rentals"))
+			})
+		})
+
+		When("Controller returns proper response", func() {
+			BeforeEach(func() {
+				mockContext.Request, _ = http.NewRequest("GET", urlString, nil)
+				controller.EXPECT().GetFilteredRentals(gomock.Any()).Return([]internal.GetRentalResponse{expectedControllerResult}, nil)
+			})
+
+			It("should retrun a StatusOK with the filtered rental", func() {
+				mockContext.Request.URL.RawQuery = "limit=1&near=\"11.54,125.15\""
+				presenter.GetRentalsByFilters(mockContext)
+				Expect(mockContext.Writer.Status()).To(Equal(http.StatusOK))
+				var resp []internal.GetRentalResponse
+				Expect(json.Unmarshal(recorder.Body.Bytes(), &resp)).To(Succeed())
+				Expect(len(resp)).To(Equal(1))
+				Expect(resp[0]).To(Equal(expectedControllerResult))
 			})
 		})
 	})

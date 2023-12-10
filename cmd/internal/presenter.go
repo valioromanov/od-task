@@ -32,7 +32,7 @@ func (p *Presenter) GetSingleRentalByID(ctx *gin.Context) {
 
 	rental, err := p.Controller.GetRentalByID(vehicleID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, NewAPIError(fmt.Errorf("cannot fetch a single rental by id").Error(), http.StatusInternalServerError))
+		ctx.JSON(http.StatusInternalServerError, NewAPIError(fmt.Errorf("cannot fetch a single rental by id: %w", err).Error(), http.StatusInternalServerError))
 		return
 	}
 
