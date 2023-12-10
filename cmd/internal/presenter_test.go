@@ -113,7 +113,7 @@ var _ = Describe("Presenter", mockutil.Mockable(func(helper *mockutil.Helper) {
 		})
 	})
 
-	FDescribe("GetRentalsByFilters", func() {
+	Describe("GetRentalsByFilters", func() {
 		var urlString = "http://abc.com/rental/"
 		When("Controller returns an error", func() {
 			BeforeEach(func() {
