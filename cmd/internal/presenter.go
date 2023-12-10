@@ -7,18 +7,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//go:generate mockgen --source=presenter.go --destination mocks/presenter.go --package mocks
 type RentalController interface {
 	GetRentalByID(id string) (GetRentalResponse, error)
 	GetFilteredRentals(filters map[string][]string) ([]GetRentalResponse, error)
 }
 
 type Presenter struct {
-	controller *Controller
+	Controller RentalController
 }
 
-func NewPresenter(controller *Controller) *Presenter {
+func NewPresenter(controller RentalController) *Presenter {
 	return &Presenter{
-		controller: controller,
+		Controller: controller,
 	}
 }
 
@@ -29,9 +30,9 @@ func (p *Presenter) GetSingleRentalByID(ctx *gin.Context) {
 		return
 	}
 
-	rental, err := p.controller.GetRentalByID(vehicleID)
+	rental, err := p.Controller.GetRentalByID(vehicleID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, NewAPIError(fmt.Errorf("cannot fetch a single rental by id").Error(), http.StatusBadRequest))
+		ctx.JSON(http.StatusInternalServerError, NewAPIError(fmt.Errorf("cannot fetch a single rental by id: %w", err).Error(), http.StatusInternalServerError))
 		return
 	}
 
@@ -40,7 +41,7 @@ func (p *Presenter) GetSingleRentalByID(ctx *gin.Context) {
 
 func (p *Presenter) GetRentalsByFilters(ctx *gin.Context) {
 	queryParams := ctx.Request.URL.Query()
-	rentals, err := p.controller.GetFilteredRentals(queryParams)
+	rentals, err := p.Controller.GetFilteredRentals(queryParams)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, NewAPIError(fmt.Errorf("cannot fetch a filtered rentals: %s", err.Error()).Error(), http.StatusInternalServerError))
 		return

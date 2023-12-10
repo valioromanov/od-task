@@ -5,6 +5,7 @@ import (
 	"od-task/pkg/repository/postgresql"
 )
 
+//go:generate mockgen --source=controller.go --destination mocks/controller.go --package mocks
 type RentalRepository interface {
 	FindById(id string) (postgresql.FindResult, error)
 	FindByFilters(filters map[string][]string) ([]postgresql.FindResult, error)
@@ -21,13 +22,13 @@ func NewController(repository RentalRepository) *Controller {
 }
 
 func (c *Controller) GetRentalByID(id string) (GetRentalResponse, error) {
-	var vehicle = postgresql.FindResult{}
-	vehicle, err := c.repo.FindById(id)
+	var rentalInfo = postgresql.FindResult{}
+	rentalInfo, err := c.repo.FindById(id)
 
 	if err != nil {
 		return GetRentalResponse{}, err
 	}
-	rental := findResultToControllerResponse(vehicle)
+	rental := findResultToControllerResponse(rentalInfo)
 	return rental, nil
 }
 

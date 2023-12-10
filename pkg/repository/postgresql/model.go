@@ -6,7 +6,7 @@ import (
 
 type Rentals struct {
 	ID              int       `gorm:"primarykey column:id"`
-	UserForeignID   string    `gorm:"column:user_id"`
+	UserForeignID   int       `gorm:"column:user_id"`
 	Name            string    `gorm:"column:name"`
 	Type            string    `gorm:"column:type"`
 	Description     string    `gorm:"column:description"`
