@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/kelseyhightower/envconfig"
+	"github.com/sirupsen/logrus"
 )
 
 type AppConfig struct {
@@ -19,6 +20,7 @@ type AppConfig struct {
 func LoadAppConfig() (AppConfig, error) {
 	var config AppConfig
 	if err := envconfig.Process("", &config); err != nil {
+		logrus.Error("error while binding to 'AppConfig': ", err)
 		return AppConfig{}, fmt.Errorf("failed to parse configuration from environment: %w", err)
 	}
 

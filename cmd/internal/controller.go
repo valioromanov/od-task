@@ -3,6 +3,8 @@ package internal
 import (
 	"fmt"
 	"od-task/pkg/repository/postgresql"
+
+	"github.com/sirupsen/logrus"
 )
 
 //go:generate mockgen --source=controller.go --destination mocks/controller.go --package mocks
@@ -24,9 +26,9 @@ func NewController(repository RentalRepository) *Controller {
 func (c *Controller) GetRentalByID(id string) (GetRentalResponse, error) {
 	var rentalInfo = postgresql.FindResult{}
 	rentalInfo, err := c.repo.FindById(id)
-
 	if err != nil {
-		return GetRentalResponse{}, err
+		logrus.Error(fmt.Sprintf("error while fetching a single rental with id %s  from database: %s", id, err))
+		return GetRentalResponse{}, fmt.Errorf("error while fetching a single rental: %s", err.Error())
 	}
 	rental := findResultToControllerResponse(rentalInfo)
 	return rental, nil
@@ -35,6 +37,7 @@ func (c *Controller) GetRentalByID(id string) (GetRentalResponse, error) {
 func (c *Controller) GetFilteredRentals(filters map[string][]string) ([]GetRentalResponse, error) {
 	filteredRentals, err := c.repo.FindByFilters(filters)
 	if err != nil {
+		logrus.Error(fmt.Sprintf("error while fetching rentals with filters %s from database: %s", filters, err))
 		return nil, fmt.Errorf("error while fetching filtered rentals: %s", err.Error())
 	}
 

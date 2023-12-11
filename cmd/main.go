@@ -31,7 +31,7 @@ func main() {
 	handler.GET("/rental", presenter.GetRentalsByFilters)
 	logrus.Info("starting http server...")
 	httpServer := &http.Server{
-		Addr:    fmt.Sprintf("%s:%s", config.Host, config.Port),
+		Addr:    fmt.Sprintf("%s:%d", config.Host, config.Port),
 		Handler: handler,
 	}
 
