@@ -25,14 +25,14 @@ func NewPresenter(controller RentalController) *Presenter {
 }
 
 func (p *Presenter) GetSingleRentalByID(ctx *gin.Context) {
-	vehicleID := ctx.Param("rentalID")
-	if vehicleID == "" {
+	rentalID := ctx.Param("rentalID")
+	if rentalID == "" {
 		logrus.Error("missing retntalID path parameter")
 		ctx.JSON(http.StatusBadRequest, NewAPIError("missing rentalID parametes", http.StatusBadRequest))
 		return
 	}
 
-	rental, err := p.Controller.GetRentalByID(vehicleID)
+	rental, err := p.Controller.GetRentalByID(rentalID)
 	if err != nil {
 		logrus.Error("error while returning from controller function GetRentalByID: ", err)
 		ctx.JSON(http.StatusInternalServerError, NewAPIError(fmt.Errorf("cannot fetch a single rental by id: %w", err).Error(), http.StatusInternalServerError))
