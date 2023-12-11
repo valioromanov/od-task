@@ -24,6 +24,10 @@ func NewRentalRepository(config env.AppConfig) *RentalRepository {
 	}
 }
 
+/*
+FindById returns a single rental from database by id
+Returns an error in case of a problem with DB
+*/
 func (r *RentalRepository) FindById(id string) (FindResult, error) {
 	result := FindResult{}
 	tx := r.db.Table("rentals").Select("*").
@@ -41,6 +45,10 @@ func (r *RentalRepository) FindById(id string) (FindResult, error) {
 	return result, nil
 }
 
+/*
+FindByFilters returns an array of rental from database depending on the given filters
+Returns an error in case of a problem with DB
+*/
 func (r *RentalRepository) FindByFilters(filters map[string][]string) ([]FindResult, error) {
 	results := []FindResult{}
 
